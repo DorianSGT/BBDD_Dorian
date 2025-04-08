@@ -1,0 +1,57 @@
+INSERT INTO nacimientos (Nombre, Apellido1, Apellido2, FechaNac, Provincia) VALUES 
+('Ana', 'Saénz', 'López', '2008-01-05', 'SE'),
+('Concepción', 'Flores', 'Cruz', '2009-02-27', 'SA'),
+('Inmaculada', 'Alba', 'Ruiz', '2007-12-15', 'B'),
+('Felipe', 'Fernández', 'Gómez', '2007-11-13', 'S'),
+('Sandra', 'Barata', 'Reyes', '2008-05-21', 'M'),
+('Daniel', 'López', 'Rojas', '2008-07-25', 'TO'),
+('Jaime', 'Ríos', 'Roma', '2008-10-30', 'M'),
+('Miguel', 'Bendita', 'Gil', '2009-03-17', 'MA'),
+('Raquel', 'Robles', 'Santos', '2009-04-04', 'TO'),
+('Arantxa', 'Antón', 'Barrios', '2009-04-04', 'M'),
+('Elisa', 'Alonso', 'López', '2009-08-20', 'V'),
+('Rémulo', 'Fernández', 'Alto', '2009-08-19', 'CA');
+
+
+CREATE TABLE Nacimientos09 (
+    Nombre VARCHAR(12) NOT NULL,
+    Apellido1 VARCHAR(12) NOT NULL,
+    Apellido2 VARCHAR(12) NOT NULL,
+    FechaNac DATE DEFAULT NULL,
+    Provincia VARCHAR(2) DEFAULT NULL,
+    PRIMARY KEY (Nombre, Apellido1, Apellido2)
+);
+
+CREATE TABLE NacimientosTauro (
+    Nombre VARCHAR(12) NOT NULL,
+    Apellido1 VARCHAR(12) NOT NULL,
+    Apellido2 VARCHAR(12) NOT NULL,
+    FechaNac DATE DEFAULT NULL,
+    Provincia VARCHAR(2) DEFAULT NULL,
+    PRIMARY KEY (Nombre, Apellido1, Apellido2)
+);
+
+INSERT INTO Nacimientos09 (Nombre, Apellido1, Apellido2, FechaNac, Provincia) SELECT Nombre, Apellido1, Apellido2, FechaNac, Provincia
+FROM nacimientos WHERE YEAR(FechaNac) = 2009;
+
+INSERT INTO NacimientosTauro (Nombre, Apellido1, Apellido2, FechaNac, Provincia) SELECT Nombre, Apellido1, Apellido2, FechaNac, Provincia
+FROM nacimientos
+WHERE (MONTH(FechaNac) = 4 AND DAY(FechaNac) >= 21) OR (MONTH(FechaNac) = 5 AND DAY(FechaNac) <= 21);
+
+
+UPDATE nacimientos
+SET Provincia = 'M'
+WHERE Apellido1 LIKE '%z' OR Apellido2 LIKE '%z';
+
+UPDATE nacimientos
+SET Provincia = 'AL'
+WHERE Provincia = 'MA';
+
+UPDATE nacimientos
+SET FechaNac = DATE_ADD(FechaNac, INTERVAL 2 YEAR)
+WHERE Provincia = 'M' AND YEAR(FechaNac) < 2009;
+
+UPDATE nacimientos
+SET Nombre = CONCAT(Nombre, ' María'), 
+Apellido1 = CONCAT('de ', Apellido1)
+WHERE LEFT(Apellido1, 1) = LEFT(Provincia, 1);
