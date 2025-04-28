@@ -1,0 +1,179 @@
+CREATE TABLE puertos (
+    nombrepuerto VARCHAR(30),
+    altura INT,
+    pendiente DECIMAL(4,2),
+    numetapa INT
+);
+
+INSERT INTO puertos (nombrepuerto, altura, pendiente, numetapa) VALUES
+('Sierra Nevada', 2500, 6, 4),
+('Coll de Ordino', 1980, 5, 6),
+('Puerto de Navalmoral', 1901, 5, 8),
+('Arcalis', 1592, 5, 10),
+('Puerto de Pedro Bernardo', 1562, 5, 12),
+('Puerto de Mijares', 1525, 5, 14),
+('Coll de la Comella', 1020, 5, 16),
+('Lagos de Covadonga', 810, 5, 18),
+('Alto del Naranco', 403, 5, 20);
+
+SELECT nombrepuerto, ROUND(altura / pendiente, 1) AS dificultad
+FROM puertos
+ORDER BY dificultad DESC;
+
+CREATE TABLE etapas (
+    salida VARCHAR(30),
+    dorsal_ganador INT,
+    numetapa INT,
+    kms INT
+);
+
+INSERT INTO etapas (salida, dorsal_ganador, numetapa, kms) VALUES
+('Valladolid', 100, 6, 9),
+('Granada', 60, 10, 150),
+('Benidorm', 99, 20, 40),
+('Benidorm', 23, 25, 150),
+('Santander', 11, 11, 160),
+('Cangas de Ons', 67, 12, 140),
+('Segovia', 78, 18, 52);
+
+SELECT salida, ABS(dorsal_ganador - numetapa) AS diferencia,kms
+FROM etapas
+WHERE SQRT(kms) < 13;
+
+CREATE TABLE facturas (
+    fecha_fac DATE,
+    producto VARCHAR(30),
+    unidades INT
+);
+
+INSERT INTO facturas (fecha_fac, producto, unidades) VALUES
+('2005-06-30', 'Y. fresa semi', 8),
+('2005-06-30', 'Leche calcio', 12),
+('2005-06-30', 'Yogurt natural', 12),
+('2005-06-30', 'Y. fresa semi', 12),
+('2005-06-30', 'Flan', 5),
+('2005-06-30', 'Cuajada', 7),
+('2005-06-30', 'Leche calcio', 24),
+('2005-06-30', 'Leche entera', 24),
+('2005-06-30', 'Leche desnatada', 24),
+('2005-06-30', 'Cuajada', 6),
+('2005-06-30', 'Queso fresco', 3),
+('2005-06-30', 'Yogurt limón', 12),
+('2005-06-30', 'Yogurt fresa', 16),
+('2005-06-30', 'Y. natural semi', 20),
+('2005-06-01', 'Crema catalana', 10),
+('2005-06-01', 'Leche semi', 24),
+('2005-06-01', 'Leche desnatada', 24),
+('2005-06-01', 'Yogurt natural', 12),
+('2005-06-01', 'Yogurt limón', 8),
+('2005-06-01', 'Y. natural semi', 8),
+('2005-06-01', 'Y. fresa semi', 12),
+('2005-06-01', 'Leche entera', 24),
+('2005-06-01', 'Leche semi', 24),
+('2005-06-01', 'Leche calcio', 12),
+('2005-06-01', 'Crema catalana', 6),
+('2005-06-01', 'Cuajada', 10);
+
+SELECT fecha_fac,producto,unidades, CEIL(unidades / 12) AS num_paquetes,
+    CASE 
+        WHEN unidades % 12 = 0 THEN 0
+        ELSE 12 - (unidades % 12)
+    END AS hueco_ultimo_paquete
+    FROM facturas
+    WHERE unidades < 36
+    ORDER BY fecha_fac DESC LIMIT 20;
+
+CREATE TABLE paises (
+    Name VARCHAR(30) NOT NULL,
+    Code VARCHAR(3) PRIMARY KEY,
+    IndepYear INT
+);
+
+INSERT INTO paises (Name, Code, IndepYear) VALUES
+('China', 'CHN', -1523),
+('Ethiopia', 'ETH', -1000),
+('Japan', 'JPN', -660),
+('Denmark', 'DNK', 800),
+('France', 'FRA', 843),
+('Sweden', 'SWE', 836),
+('San Marino', 'SMR', 885),
+('United Kingdom', 'GBR', 1066),
+('Portugal', 'PRT', 1143),
+('Andorra', 'AND', 1278),
+('Thailand', 'THA', 1350),
+('Spain', 'ESP', 1492),
+('Switzerland', 'CHE', 1499),
+('Netherlands', 'NLD', 1581);
+
+
+SELECT Name, Code,
+       FLOOR((YEAR(CURDATE()) - IndepYear) / 100) AS Centenarios
+       FROM paises
+       WHERE (YEAR(CURDATE()) - IndepYear) / 100 > 3
+       ORDER BY Centenarios DESC;
+
+CREATE TABLE nacimientos2 (
+    nombre VARCHAR(30) NOT NULL,
+    apellido1 VARCHAR(30) NOT NULL,
+    nacimiento DATE NOT NULL
+);
+
+INSERT INTO nacimientos2 (nombre, apellido1, nacimiento) VALUES
+('Alberto', 'Ferro', '2005-01-20'),
+('Carmen', 'Lona', '2005-02-14'),
+('Concepción', 'Flores', '2009-02-27'),
+('Mónica', 'Barrios', '2005-03-31'),
+('Miguel', 'Bendita', '2009-03-17'),
+('Ricardo', 'Fernández', '2003-02-28'),
+('Rosa', 'Alba', '2005-02-14'),
+('Rémulo', 'Fernández', '2009-08-19'),
+('Sandra', 'Barata', '2008-05-21');
+
+SELECT Nombre, Apellido1,
+    DATE_FORMAT(nacimiento, '%d de %M de %Y')
+    FROM nacimientos2
+    WHERE MONTH(nacimiento) < 5 AND DAY(nacimiento) > 10
+    ORDER BY nacimiento
+    LIMIT 7;
+
+SELECT Nombre, Apellido1,
+    DATE_ADD(nacimiento, INTERVAL 18 YEAR) AS mayoriaEdad
+    FROM nacimientos2
+    WHERE DAYOFWEEK(nacimiento) = 4
+    LIMIT 2;
+
+CREATE TABLE nacimientos3 (
+    nombre VARCHAR(50) NOT NULL,
+    apellido1 VARCHAR(50) NOT NULL,
+    apellido2 VARCHAR(50),
+    FechaNac DATE NOT NULL,
+    Provincia CHAR(2)
+);
+INSERT INTO nacimientos3 (nombre, apellido1, apellido2, FechaNac, Provincia) VALUES
+('Concepción', 'Flores', 'Cruz', '2009-02-27', 'SA'),
+('Felipe', 'Fernández', 'Gómez', '2007-11-13', 'S'),
+('Fernando', 'Fernández', 'Fernández', '2005-01-02', 'AL'),
+('Rémulo', 'Fernández', 'Alto', '2009-08-19', 'CA'),
+('Isabel', 'Alonso', 'López', '2006-03-15', 'M'),
+('Manuel', 'Robles', 'García', '2004-07-22', 'SE'),
+('Raquel', 'Robles', 'Martínez', '2008-05-10', 'MA'),
+('Alberto', 'Fernández', 'Gutiérrez', '2003-09-05', 'TO'),
+('Daniel', 'López', 'Pérez', '2002-12-20', 'BA'),
+('Elisa', 'Alonso', 'López', '2001-06-18', 'CO'),
+('Ricardo', 'Fernández', 'Sánchez', '2000-08-30', 'CA'),
+('Roberto', 'Barata', 'Sánchez', '1999-04-12', 'HU'),
+('Sandra', 'Barata', 'Reyes', '1998-11-25', 'LE');
+
+SELECT * FROM nacimientos3
+	WHERE LENGTH(CONCAT(nombre, apellido1, COALESCE(apellido2, ''))) > 20
+	LIMIT 4;
+
+SELECT CONCAT(LEFT(nombre, 1), ' ', apellido1) AS Nacido
+	FROM nacimientos3
+	WHERE INSTR(SUBSTRING(apellido1, 3), 'b') > 0
+	LIMIT 4;
+
+SELECT SUBSTRING_INDEX(CONCAT(nombre, ' ', apellido1, ' ', COALESCE(apellido2, '')), 'e', 2) AS nacido
+	FROM nacimientos3
+	WHERE LENGTH(REPLACE(CONCAT(nombre, apellido1, COALESCE(apellido2, '')), 'e', '')) <= LENGTH(CONCAT(nombre, apellido1, COALESCE(apellido2, ''))) - 2
+	LIMIT 14;
